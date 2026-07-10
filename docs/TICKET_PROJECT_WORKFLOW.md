@@ -1,0 +1,8 @@
+- Move the ticket to "In Progress"
+- Open the ticket
+- Review the ticket
+- Create the branch with feat/[TICKET_NAME]
+- Implementation on the branch created
+- Push branch and creat pull request
+- Go back to ticket and link pull request created
+- The ticket automatically goes to "Code Review"
