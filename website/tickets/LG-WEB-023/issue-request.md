@@ -1,17 +1,18 @@
 ## Objective
 
-Implement clickjacking protection headers to prevent malicious sites from framing the website.
+Implement Trusted Types API to provide additional protection against DOM-based XSS attacks.
 
 ## Description
 
-Clickjacking is a security vulnerability where attackers trick users into clicking on hidden elements. This issue involves implementing X-Frame-Options and related headers to protect against this attack vector.
+Trusted Types is a browser security feature that restricts dangerous DOM APIs to only accept non-string values. This helps prevent DOM-based cross-site scripting vulnerabilities.
 
 ## Acceptance Criteria
 
-- [ ] X-Frame-Options header configured
-- [ ] X-Content-Type-Options header configured
+- [ ] Trusted Types policy defined
+- [ ] DOM manipulation code reviewed and updated if necessary
+- [ ] Trusted Types enforcement enabled
 - [ ] Tested with various browsers
-- [ ] No console warnings
+- [ ] No console violations
 - [ ] Documentation updated
 
 ## Definition of Done
