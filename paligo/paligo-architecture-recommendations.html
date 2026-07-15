@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PALIGO Architecture - Where It Stands, Where We Can Improve</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+    <style>
+        :root {
+            --ink: #1a1a1a;
+            --sub: #55585e;
+            --line: #e2e4e8;
+            --red: #b3423a;
+            --amber: #b8791f;
+            --green: #2f7a4f;
+            --blue: #2a5a9c;
+            --bg-card: #f7f8fa;
+            --accent: #0A0A0A;
+            --accent2: #7A1F35;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            color: var(--ink);
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 48px 24px 96px;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        h1 {
+            font-size: 1.9em;
+            margin-bottom: 4px;
+            letter-spacing: -0.01em;
+        }
+
+        .subtitle {
+            color: var(--sub);
+            font-size: 1.05em;
+            margin-bottom: 8px;
+        }
+
+        .meta {
+            font-size: 0.85em;
+            color: var(--sub);
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 24px;
+            margin-bottom: 36px;
+        }
+
+        h2 {
+            font-size: 1.35em;
+            margin-top: 56px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        h3 {
+            font-size: 1.05em;
+            margin-top: 28px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 12px 0;
+        }
+
+        .priority-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 20px 0 32px;
+        }
+
+        .priority-card {
+            background: var(--bg-card);
+            border-left: 4px solid var(--accent2);
+            padding: 14px 16px;
+            border-radius: 4px;
+        }
+
+        .priority-card .num {
+            font-size: 0.75em;
+            color: var(--sub);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .priority-card .label {
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .problem {
+            background: var(--bg-card);
+            border-radius: 6px;
+            padding: 18px 20px;
+            margin: 16px 0;
+            border-left: 4px solid var(--red);
+        }
+
+        .problem.amber {
+            border-left-color: var(--amber);
+        }
+
+        .problem.green {
+            border-left-color: var(--green);
+        }
+
+        .problem-title {
+            font-weight: 700;
+            font-size: 1.02em;
+            margin-bottom: 6px;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.72em;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 6px;
+            margin-bottom: 8px;
+        }
+
+        .tag.severity-high {
+            background: #f5e2e0;
+            color: var(--red);
+        }
+
+        .tag.severity-med {
+            background: #f5ecd8;
+            color: var(--amber);
+        }
+
+        .tag.fix {
+            background: #e2ecf5;
+            color: var(--blue);
+        }
+
+        .rec {
+            font-style: normal;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--line);
+        }
+
+        .rec b {
+            color: var(--blue);
+        }
+
+        .mermaid-wrap {
+            margin: 28px 0;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .mermaid-caption {
+            font-size: 0.85em;
+            color: var(--sub);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.92em;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+        }
+
+        th {
+            color: var(--sub);
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        code {
+            background: #eef0f3;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: "SF Mono", Consolas, Menlo, monospace;
+        }
+
+        .closing {
+            margin-top: 48px;
+            padding: 20px 22px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        .closing h3 {
+            color: #fff;
+            margin-top: 0;
+        }
+
+        .closing p {
+            color: #e8e8e8;
+        }
+
+        ul {
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 6px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>PALIGO Architecture - Where It Stands, Where We Can Take It</h1>
+<div class="subtitle">A working opinion, not a spec. Written to be argued with.</div>
+<div class="meta">Based on: current architecture, domain-by-domain review, and a few hours of discussion with the team.</div>
+
+<p>We went through the full domain-by-domain review. Rather than restate every finding, this is our take on the three
+    things we actually care about - <b>clarity</b>, <b>extensibility</b>, <b>scalability</b> - and where the current
+    architecture falls short of each.</p>
+
+<div class="priority-grid">
+    <div class="priority-card">
+        <div class="num">01</div>
+        <div class="label">Clear & easy to understand</div>
+    </div>
+    <div class="priority-card">
+        <div class="num">02</div>
+        <div class="label">Extendable</div>
+    </div>
+    <div class="priority-card">
+        <div class="num">03</div>
+        <div class="label">Scalable</div>
+    </div>
+</div>
+
+<h2>1. What's improvable - five things, ranked</h2>
+
+<div class="problem">
+    <div class="problem-title">Pricing depends live on Odoo</div>
+    <span class="tag severity-high">Highest risk</span><span class="tag fix">Scalability + Extensibility</span>
+    <p>Storefront calls Pricing directly, bypassing the Middleware. Pricing in turn reads from Odoo - an accounting
+        system, not a storefront-scale read API. Every filtered search result needs a price, so at 10x traffic this is
+        10x load hitting the ERP. It also quietly blocks Phase 3's dynamic pricing goal: you can't do sub-second margin
+        adjustment on an ERP-driven read path.</p>
+    <div class="rec"><b>Fix:</b> Pricing owns its own fast read store, fed asynchronously off <code>listing.price.changed</code>
+        events. Odoo becomes downstream (books the transaction), not upstream (source of live price).
+    </div>
+</div>
+
+<div class="problem">
+    <div class="problem-title">Identity has two independent trust relationships</div>
+    <span class="tag severity-med">Medium risk, compounding</span><span class="tag fix">Clarity + Extensibility</span>
+    <p>Storefront and Directus both talk to Keycloak directly. Not urgent today, but nothing stops the next consumer -
+        merchant app, Logistix, whatever's next - from copying the same pattern, since there's no stated rule against
+        it.</p>
+    <div class="rec"><b>Fix:</b> Centralize token validation at the Gateway now, while only two services need migrating,
+        not five.
+    </div>
+</div>
+
+<div class="problem">
+    <div class="problem-title">Storefront has three separate backend relationships</div>
+    <span class="tag severity-med">Medium risk</span><span class="tag fix">Clarity</span>
+    <p>Middleware, Keycloak, and Pricing - instead of one. This is the clarity problem in its purest form. A new
+        engineer has to learn two different integration contracts for what should be a single consistent one.</p>
+    <div class="rec"><b>Fix:</b> Same fix as above - one Gateway/Backend For FrontEnd (BFF) as the only thing the
+        frontend talks to. Solves
+        this and the Pricing coupling at once.
+    </div>
+</div>
+
+<div class="problem">
+    <div class="problem-title">Catalog and Merchant Listing data aren't separated</div>
+    <span class="tag severity-med">Medium risk</span><span class="tag fix">Extensibility + Scalability</span>
+    <p>Generic taxonomy/barcode data and merchant-specific price/quantity both risk living in Directus. Taxonomy is
+        read-heavy and rarely changes; listings change constantly. Mixed together, both get harder to scale and cache.
+        It also blocks a confirmed real requirement - one product belonging to multiple taxonomy groups (sand for
+        construction <i>and</i> winter roads) - which a single-parent model can't express without rework.</p>
+    <div class="rec"><b>Fix:</b> Split into two data owners now, before Phase 2's multi-group requirement forces a
+        migration under deadline.
+    </div>
+</div>
+
+<div class="problem green">
+    <div class="problem-title">Analytics risk, if built the easy way</div>
+    <span class="tag severity-med">Lower urgency, cheap to prevent now</span><span class="tag fix">Scalability</span>
+    <p>Not built yet, so this is a "don't" rather than a "fix." If Market Intelligence ends up querying
+        Order/Pricing/Merchant databases directly for reports, it competes with production traffic - worst exactly when
+        it matters most, during peak season.</p>
+    <div class="rec"><b>Fix:</b> Event-driven ingestion from day one. Never in the synchronous path of checkout or
+        pricing.
+    </div>
+</div>
+
+<h2>2. Current state, mapped</h2>
+<p>This is roughly how today's diagram behaves once you draw the actual call patterns rather than the tidy version - the
+    direct calls that skip the Gateway are the tell.</p>
+
+<div class="mermaid-wrap">
+    <div class="mermaid">
+        flowchart TB
+        SF[Storefront]
+        MW[Middleware]
+        KC[(Keycloak)]
+        DIR[(Directus CMS<br/>product data + content)]
+        MM[(Merchant Module<br/>multi-warehouse)]
+        PR[(Pricing)]
+        ODOO[(Odoo ERP<br/>orders, payment, logistics - all folded in)]
+
+        SF -- "direct call" --> KC
+        SF -- "direct call, bypasses gateway" --> PR
+        SF -- API call --> MW
+        MW --> MM
+        MW --> DIR
+        MW --> ODOO
+        DIR -- "direct call" --> KC
+        PR -- "live read" --> ODOO
+        MM -- "duplicated per warehouse" --> MM
+
+        classDef risk fill:#f5e2e0,stroke:#b3423a,stroke-width:1.5px;
+        classDef ok fill:#f7f8fa,stroke:#ccc;
+        class PR,ODOO risk;
+        class SF,MW,KC,DIR,MM ok;
+    </div>
+    <div class="mermaid-caption">Fig. 1 - Current call pattern. Red = the two nodes carrying the highest architectural
+        risk (live Pricing→Odoo read path, and Storefront's direct bypasses of the Gateway).
+    </div>
+</div>
+
+<h2>3. Where We Can Take It</h2>
+<p>One Gateway as the single front door. Domain services own their data and publish events instead of getting queried
+    live by whoever needs something. Payment and Logistics built as clean standalone services from day one, since both
+    are already flagged for eventual commercialization - retrofitting a bounded service after the fact always costs more
+    than starting with one. And <code>country</code> as a field on every domain now, even single-country, so Austria in
+    Q4 is a config rollout instead of a migration.</p>
+
+<div class="mermaid-wrap">
+    <div class="mermaid">
+        flowchart TB
+        SF[Storefront]
+        GW{{API Gateway / BFF<br/>single entry point}}
+        KC[(Identity - Keycloak<br/>one validation point)]
+
+        subgraph Core["Core commerce domains"]
+        direction TB
+        CAT[(Product Catalog<br/>taxonomy + barcode)]
+        MER[(Merchant & Listing<br/>price, qty, shipping table)]
+        PRC[(Pricing Engine<br/>own fast read store)]
+        ORD[(Order & Checkout<br/>order/order-line state)]
+        end
+
+        subgraph Future["New standalone domains"]
+        direction TB
+        PAY[(Payment & Escrow)]
+        LOG[(Logistics Connector<br/>Logistix)]
+        RAT[(Ratings & Claims)]
+        AI[(Paligo AI OS<br/>tiered: commercial vs private)]
+        end
+
+        ANA[(Market Intelligence<br/>event-driven, async only)]
+        ODOO[(Odoo ERP<br/>accounting system of record)]
+
+        SF --> GW
+        GW --> KC
+        GW --> Core
+        GW --> Future
+
+        MER -. "listing.updated events" .-> PRC
+        MER -. events .-> CAT
+        ORD -. "order.placed / order.line.split" .-> PAY
+        ORD -. events .-> LOG
+        ORD -. "order.line.delivered" .-> RAT
+        LOG -. "shipment.status.updated" .-> ORD
+        PAY -. "payout events" .-> ODOO
+        ORD -. "order.line.* events" .-> ODOO
+
+        Core -. events .-> ANA
+        Future -. events .-> ANA
+
+        classDef gw fill:#0A0A0A,color:#fff,stroke:#0A0A0A;
+        classDef async fill:#e2ecf5,stroke:#2a5a9c;
+        classDef core fill:#f7f8fa,stroke:#333;
+        classDef future fill:#f2e9ec,stroke:#7A1F35;
+        class GW gw;
+        class ANA async;
+        class CAT,MER,PRC,ORD core;
+        class PAY,LOG,RAT,AI future;
+    </div>
+    <div class="mermaid-caption">Fig. 2 - Target state. Solid lines = synchronous, gateway-brokered. Dashed lines =
+        async events. Odoo moves from "upstream source of truth for everything" to "downstream accounting system of
+        record."
+    </div>
+</div>
+
+<h3>Sequencing - What We Can Do in What Order</h3>
+<table>
+    <tr>
+        <th>Order</th>
+        <th>Move</th>
+        <th>Why now, not later</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Gateway consolidation (single entry point for Storefront)</td>
+        <td>Cheapest fix, unblocks Identity fix and the Pricing decoupling at once</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Pricing decoupled from live Odoo reads</td>
+        <td>Highest current risk; also a hard prerequisite for Phase 3 dynamic pricing</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Catalog / Merchant Listing data split</td>
+        <td>Needed before Phase 2's multi-group taxonomy requirement lands</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>Payment & Logistics built standalone from the start</td>
+        <td>Both are already slated for commercialization (Logistix SaaS) - build once,
+            not twice
+        </td>
+    </tr>
+</table>
+
+<div class="closing">
+    <h3>Bottom line</h3>
+    <p>
+        Every fix is a boundary decision more than a technology decision - where does a call go, who owns which data, what's sync vs. async. <br>
+        The Pricing→Odoo dependency is the one We'll genuinely lose sleep over before the next seasonal spike. Everything else is worth doing but not on fire.
+    </p>
+</div>
+
+<script>
+    mermaid.initialize({startOnLoad: true, theme: 'neutral', securityLevel: 'loose', flowchart: {curve: 'basis'}});
+</script>
+</body>
+</html>
